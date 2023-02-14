@@ -17,10 +17,10 @@ namespace AstraBlog.Models
         [Required]
         public string? Content { get; set; }
 
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime Created { get; set; }
 
-        [DataType(DataType.Date)]
+        [DataType(DataType.DateTime)]
         public DateTime? Updated { get; set; }
 
         // TODO: make this required
@@ -40,12 +40,17 @@ namespace AstraBlog.Models
         public virtual IFormFile? ImageFile { get; set; }
 
 
-        // navigation properties
 
+
+        // Foreign Key 1-to-1
         public int CategoryId { get; set; }
+        // Navigation Property
         public virtual Category? Category { get; set; }
 
+
+        // Navigation Property Many-to-many
         public virtual ICollection<Tag> Tags { get; set; } = new HashSet<Tag>();
+        // Navigation Property 1-to-Many
         public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
 
     }

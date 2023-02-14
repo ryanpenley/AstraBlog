@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AstraBlog.Data;
 using AstraBlog.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace AstraBlog.Controllers
 {
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BlogUser> _userManager;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context, UserManager<BlogUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Categories
@@ -46,8 +49,14 @@ namespace AstraBlog.Controllers
         }
 
         // GET: Categories/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
+
+            string? userId = _userManager.GetUserId(User)!;
+
+            IEnumerable<Category> model = await _context.Categories
+                                            .Include(c => c.BlogPosts)
+                                            .ToListAsync();
             return View();
         }
 
