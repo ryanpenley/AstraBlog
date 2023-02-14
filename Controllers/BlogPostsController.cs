@@ -38,6 +38,19 @@ namespace AstraBlog.Controllers
             return View(posts);
         }
 
+        // GET: AdminPage *********************************************************************************
+        public async Task<IActionResult> AdminPage()
+        {
+
+            var blogPosts = await _context.BlogPosts.Include(b => b.Category).ToListAsync();
+
+
+            return View(blogPosts);
+        }
+
+
+
+
         // GET: BlogPosts/Details/5 **********************************************************************************
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
