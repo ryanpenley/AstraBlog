@@ -9,6 +9,8 @@ using AstraBlog.Data;
 using AstraBlog.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using AstraBlog.Services.Interfaces;
+using AstraBlog.Services;
 
 namespace AstraBlog.Controllers
 {
@@ -17,32 +19,23 @@ namespace AstraBlog.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BlogUser> _userManager;
+        private readonly IImageService _imageService;
+        readonly IBlogPostService _blogPostService;
 
-
-        public BlogPostsController(ApplicationDbContext context, UserManager<BlogUser> userManager)
+        public BlogPostsController(ApplicationDbContext context, UserManager<BlogUser> userManager, IImageService imageService, IBlogPostService blogPostService)
         {
             _context = context;
             _userManager = userManager;
+            _imageService = imageService;
+            _blogPostService = blogPostService;
         }
 
-        // GET: BlogPosts *****************************************************************************************
-        [AllowAnonymous]
-        public async Task<IActionResult> Index()
-        {
-
-            List<BlogPost> posts = new List<BlogPost>();
-
-            posts = await _context.BlogPosts.Include(c => c.Category).ToListAsync();
-
-
-            return View(posts);
-        }
 
         // GET: AdminPage *********************************************************************************
         public async Task<IActionResult> AdminPage()
         {
 
-            var blogPosts = await _context.BlogPosts.Include(b => b.Category).ToListAsync();
+            var blogPosts = await _blogPostService.GetBlogPostsAsync();
 
 
             return View(blogPosts);
@@ -55,14 +48,13 @@ namespace AstraBlog.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.BlogPosts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var blogPost = await _context.BlogPosts
-                .Include(b => b.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var blogPost = await _blogPostService.GetBlogPostAsync(id.Value);
+
             if (blogPost == null)
             {
                 return NotFound();
@@ -76,24 +68,21 @@ namespace AstraBlog.Controllers
         {
             // Query and present the list of categories for the logged in user
             string? userId = _userManager.GetUserId(User);
-
-            IEnumerable<Category> categoriesList = await _context.Categories
-                                                                 .ToListAsync();
             
             IEnumerable<Tag> tagsList = await _context.Tags
                                                       .ToListAsync();
 
 
-            ViewData["CategoryList"] = new SelectList(categoriesList, "Id", "Name");
+            ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
             ViewData["TagsList"] = new MultiSelectList(tagsList, "Id", "Name");
 
-            return View();
+            return View(new BlogPost());
         }
 
         // POST: BlogPosts/Create ******************************************************************************
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageData,ImageType,CategoryId")] BlogPost blogPost, int selectedCategory, IEnumerable<int> selectedTags
+        public async Task<IActionResult> Create([Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,CategoryList")] BlogPost blogPost, int selectedCategory, IEnumerable<int> selectedTags
             )
         {
 
@@ -107,19 +96,25 @@ namespace AstraBlog.Controllers
                 // Format Date
                 blogPost.Created = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
+                // Reformat if Image was Updated
+                if (blogPost.ImageFile != null)
+                {
+                    blogPost.ImageData = await _imageService.ConvertFileToByteArrayAsync(blogPost.ImageFile);
+                    blogPost.ImageType = blogPost.ImageFile.ContentType;
+                }
 
 
-                blogPost.CategoryId= selectedCategory;
+                blogPost.CategoryId = selectedCategory;
+
+                // calls service to save new blogpost
+                await _blogPostService.AddBlogPostAsync(blogPost);
 
 
 
-                _context.Add(blogPost);
-                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TagsList"] = new MultiSelectList(_context.Categories, "Id", "Name");
             
-            ViewData["CategoryList"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
             return View(blogPost);
         }
 
@@ -138,16 +133,14 @@ namespace AstraBlog.Controllers
 
 
 
-            var blogPost = await _context.BlogPosts
-                                         .Include(b => b.Category)
-                                         .FirstOrDefaultAsync(b => b.Id == id);
+            var blogPost = await _blogPostService.GetBlogPostAsync(id.Value);
             if (blogPost == null)
             {
                 return NotFound();
             }
 
 
-            ViewData["CategoryList"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
             return View(blogPost);
         }
 
@@ -158,7 +151,7 @@ namespace AstraBlog.Controllers
         // POST: BlogPosts/Edit/5 **********************************************************************************************************
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageData,ImageType,CategoryId")] BlogPost blogPost, int selectedCategory)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,ImageData,ImageType,CategoryList")] BlogPost blogPost, int selectedCategory)
         {
             if (id != blogPost.Id)
             {
@@ -173,18 +166,25 @@ namespace AstraBlog.Controllers
                     blogPost.Created = DataUtility.GetPostGresDate(blogPost.Created);
                     blogPost.Updated = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
+                    // Reformat if Image was Updated
+                    if (blogPost.ImageFile != null)
+                    {
+                        blogPost.ImageData = await _imageService.ConvertFileToByteArrayAsync(blogPost.ImageFile);
+                        blogPost.ImageType = blogPost.ImageFile.ContentType;
+                    }
+
+
 
                     blogPost.CategoryId = selectedCategory;
 
 
-                    _context.Update(blogPost);
 
+                    await _blogPostService.UpdateBlogPostAsync(blogPost);
 
-                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BlogPostExists(blogPost.Id))
+                    if (await BlogPostExists(blogPost.Id))
                     {
                         return NotFound();
                     }
@@ -195,21 +195,19 @@ namespace AstraBlog.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
             return View(blogPost);
         }
 
         // GET: BlogPosts/Delete/5 ******************************************************************************************
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.BlogPosts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var blogPost = await _context.BlogPosts
-                .Include(b => b.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var blogPost = await _blogPostService.GetBlogPostAsync(id.Value);
             if (blogPost == null)
             {
                 return NotFound();
@@ -223,23 +221,22 @@ namespace AstraBlog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.BlogPosts == null)
+            if (id == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.BlogPosts'  is null.");
+                return NotFound();
             }
-            var blogPost = await _context.BlogPosts.FindAsync(id);
+            var blogPost = await _blogPostService.GetBlogPostAsync(id);
             if (blogPost != null)
             {
-                _context.BlogPosts.Remove(blogPost);
+                await _blogPostService.DeleteBlogPostAsync(blogPost);
             }
             
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BlogPostExists(int id)
+        private async Task<bool> BlogPostExists(int id)
         {
-          return (_context.BlogPosts?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (await _blogPostService.GetBlogPostsAsync()).Any(b => b.Id == id);
         }
     }
 }

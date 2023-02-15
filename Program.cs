@@ -1,5 +1,7 @@
 using AstraBlog.Data;
 using AstraBlog.Models;
+using AstraBlog.Services;
+using AstraBlog.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +20,15 @@ builder.Services.AddIdentity<BlogUser, IdentityRole>(options => options.SignIn.R
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddControllersWithViews();
+
+// Custom Services
+
+builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IBlogPostService, BlogPostService>();
+
+
+
+builder.Services.AddMvc();
 
 var app = builder.Build();
 
