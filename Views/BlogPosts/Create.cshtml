@@ -2,103 +2,79 @@
 @using AstraBlog.Services.Interfaces
 
 @inject IImageService _ImageService
+@inject IBlogPostService _BlogPostService
 @model AstraBlog.Models.BlogPost
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<div class="post-single-wrapper axil-section-gap bg-color-white">
-    <div class="container">
+<main class="container mt-5">
+    <form asp-action="Create" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="row">
-            <form asp-action="Create" enctype="multipart/form-data">
-                <div class="col-md-10">
-                    <!-- Start Blog Details  -->
-                    <div class="axil-post-details">
-                        <h4 class="title">Add a new BlogPost</h4>
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <p class="comment-notes">
-                            <span id="email-notes">
-                                Create a new blog using the following fields.
-                            </span> Required items are marked <span class="required">*</span>
-                        </p>
-                        <div class="row row-cols-10">
-                            <div class="col-lg-8 col-md-8 col-12">
-                                <div class="form-group">
-                                    <label asp-for="Category" class="control-label"></label>
-                                    <br />
-                                    <select class="w-100" name="SelectedCategory" asp-for="Category" asp-items="ViewBag.CategoryList"></select>
-                                    <span asp-validation-for="Category" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-8 col-md-8 col-12">
-                                <div class="form-group">
-                                    <label asp-for="Title" class="control-label"></label>
-                                    <input asp-for="Title" class="form-control" />
-                                    <span asp-validation-for="Title" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-8 col-md-8 col-12">
-                                <div class="form-group">
-                                    <label asp-for="Abstract" class="control-label"></label>
-                                    <textarea asp-for="Abstract" class="form-control"></textarea>
-                                    <span asp-validation-for="Abstract" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-8 col-md-8 col-12">
-                                <div class="form-group">
-                                    <label asp-for="Tags" class="control-label"></label>
-                                    <select name="SelectedTags" class="form-control" asp-items="ViewBag.BlogPostTags" multiple></select>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-12">
-                                <div class="form-group">
-                                    <label asp-for="ImageFile" class="control-label"></label>
-                                    <input type="file" asp-for="ImageFile" class="form-control w-100" accept=".png,.jpg,.jpeg,.gif,.svg"
-                                           onchange="document.getElementById('imageData').src = window.URL.createObjectURL(this.files[0])" />
-                                    <span asp-validation-for="ImageFile" class="text-danger"></span>
-                                </div>
-                                <div class="post-thumbnail">
-                                    <img id="imageData" src="@_ImageService.ConvertByteArrayToFile(Model.ImageData!,Model.ImageType!,(int)DefaultImage.BlogPostImage)" alt="Post Images" />
-                                </div>
-                            </div>
-                            <div class="col-lg-8 col-md-8 col-12">
-                                <div class="form-group">
-                                    <label asp-for="Content" class="control-label"></label>
-                                    <textarea asp-for="Content" class="form-control editor"></textarea>
-                                    <span asp-validation-for="Content" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-8 col-md-8 col-12">
-                                <div class="form-group">
-                                    <input class="" type="checkbox" asp-for="IsPublished" />
-                                    <label class="control-label" asp-for="IsPublished">Publish</label>
-                                    <span asp-validation-for="IsPublished" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-submit cerchio">
-                                    <input name="submit" type="submit" id="submit" class="axil-button button-rounded" value="Submit">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="col-12 col-lg-4">
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
-                <div class="col-md-2">
-                    <div class="axil-post-details">
-                    </div>
+                <div class="form-group">
+                    <label asp-for="Abstract" class="control-label"></label>
+                    <textarea asp-for="Abstract" class="form-control" rows="1"></textarea>
+                    <span asp-validation-for="Abstract" class="text-danger"></span>
                 </div>
-            </form>
-        </div>
-    </div>
-</div>
+                <div class="form-group">
+                    <label asp-for="CategoryId" class="control-label">Category</label>
+                    <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryList"></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ImageFile" class="control-label">Blog Post Image</label>
+                    <img class="img-fluid border rounded-3 m-2" style="max-height: 250px;" src="~/img/DefaultBlogImage.png" id="blogImage">
+                    <input asp-for="ImageFile" type="file" class="form-control mt-3 pt-2" accept=".png,.jpg,.jpeg,.gif"
+                           onchange="document.getElementById('blogImage').src = window.URL.createObjectURL(this.files[0])" />
+                </div>
+            </div>
+            <div class="col-12 col-lg-8">
+                <div class="form-group">
+                    <label asp-for="Content" class="control-label"></label>
+                    <textarea asp-for="Content" class="editor form-control"></textarea>
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+                <div class="form-group" id="tagContainer">
+                    <label asp-for="Tags"></label>
+                    <input class="form-control" type="text" id="tagInput" name="StringTags" autocomplete="off" />
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+                    <div class="tagcloud axil-single-widget mt-2" style="display: none;">
+                        @foreach (Tag tag in await _BlogPostService.GetTagsAsync())
+                        {
+                            <a onclick="addTag(this)">@tag.Name</a>
+                        }
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+        <div class="form-group d-flex justify-content-end mt-3">
+            <div class="form-group form-check d-flex my-auto">
+                <label class="form-check-label my-auto me-4">
+                    <input class="form-check-input me-3" asp-for="IsPublished" />&nbsp; Publish?
+                </label>
+            </div>
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </form>
+    <div class="mt-5">
+        <a asp-action="AdminPage">Back to List</a>
+    </div>
+</main>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script src="~/ckeditor5/build/ckeditor.js"></script>
     <script>
@@ -115,5 +91,81 @@
                 console.warn('Build id: xx09iayzufkn-lkt434h3lx2z');
                 console.error(error);
             });
+    </script>
+
+    <script>
+        function addTag(el) {
+            let input = document.getElementById('tagInput');
+
+            if (el.classList.contains('disabledTag')) 
+            {
+                input.focus();
+                return;
+            }
+
+            let tagName = el.textContent + ', ';
+
+            let currentTags = input.value.split(',');
+
+            //remove partially entered tag
+            currentTags.pop();
+
+            //add the full tag name of the clicked tag
+            currentTags.push(tagName);
+
+            input.value = currentTags.reduce( (inputString, currentString) => inputString + ', ' + currentString.trim() );
+
+            el.classList.add('disabledTag');
+
+            input.focus();
+        }
+
+        // override the jQuery ":contains" selector to make it case insensitive
+        jQuery.expr[':'].contains = function (a, i, m) {
+            return $(a).text().toUpperCase()
+                .indexOf(m[3].toUpperCase()) >= 0;
+        };
+
+        $(document).ready(function() {
+            // show tag cloud when the input is focused
+            $('#tagInput').focus(function() {
+                $('.tagcloud').show(300);
+            });
+
+            $('form *:not("#tagInput")').focus(function() {
+                if ($('.tagcloud').is(':visible')) {
+                    $('.tagcloud').hide(300);
+                }
+                
+            });
+
+            // search tag cloud
+            $('#tagInput').keyup(function() {
+                // clear all disabledTag classes
+                $('.disabledTag').each(function() {
+                    $(this).removeClass('disabledTag');
+                });
+
+                let inputTags = $(this).val().split(',');
+                let searchString = inputTags.pop().trim();
+
+                $( '.tagcloud > a:not( :contains(' + searchString + ') )' ).hide();
+                $( '.tagcloud > a:contains(' + searchString + ')' ).show();
+
+                inputTags.forEach(tag => {
+                    if (tag.trim() == '') return;
+
+                    let containingTag = $('.tagcloud > a:contains(' + tag.trim() + ')')
+                    if (containingTag.text().toLowerCase() == tag.trim().toLowerCase()) {
+
+                        containingTag.addClass('disabledTag');
+
+                    }
+                });
+
+
+            })
+
+        });
     </script>
 }

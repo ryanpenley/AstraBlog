@@ -1,4 +1,5 @@
 ﻿using AstraBlog.Data;
+using AstraBlog.Helpers;
 using AstraBlog.Models;
 using AstraBlog.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +47,7 @@ namespace AstraBlog.Services
         {
             try
             {
-                blogPost.IsDeleted= true;
+                blogPost.IsDeleted = true;
                 await UpdateBlogPostAsync(blogPost);
             }
             catch (Exception)
@@ -86,6 +87,24 @@ namespace AstraBlog.Services
 
                 throw;
             };
+        }
+
+        public async Task<BlogPost> GetBlogPostAsync(string blogPostSlug)
+        {
+            try
+            {
+                BlogPost? blogPost = await _context.BlogPosts
+                                                  .Include(b => b.Category)
+                                                  .Include(b => b.Tags)
+                                                  .Include(b => b.Comments)
+                                                  .FirstOrDefaultAsync(b => b.Slug == blogPostSlug);
+                return blogPost!;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }; ;
         }
 
         public async Task<IEnumerable<BlogPost>> GetBlogPostsAsync()
@@ -199,7 +218,7 @@ namespace AstraBlog.Services
                                                                 .ToListAsync();
 
                 return blogPosts.OrderByDescending(b => b.Created);
-                                                                
+
             }
             catch (Exception)
             {
@@ -227,7 +246,7 @@ namespace AstraBlog.Services
                                                                 .ToListAsync();
 
                 return blogPosts.OrderByDescending(b => b.Created).Take(count);
-                                                                
+
             }
             catch (Exception)
             {
@@ -235,7 +254,7 @@ namespace AstraBlog.Services
                 throw;
             }
         }
-        
+
 
         public async Task UpdateBlogPostAsync(BlogPost blogPost)
         {
@@ -263,6 +282,136 @@ namespace AstraBlog.Services
 
                 throw;
             }
+        }
+
+
+        public async Task<IEnumerable<Tag>> GetTagsAsync ()
+        {
+            try
+            {
+                IEnumerable<Tag> tags = await _context.Tags
+                                                      .Include(t => t.BlogPosts)
+                                                      .ToListAsync();
+
+                return tags;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        //public Task AddTagsToBlogPostAsync(IEnumerable<int> tagIds, int blogPostId) { }
+
+        public async Task AddTagsToBlogPostAsync(string stringTags, int blogPostId) 
+        {
+            try
+            {
+                BlogPost? blogPost = await _context.BlogPosts.FindAsync(blogPostId);
+
+                if (blogPost == null)
+                {
+                    return;
+                }
+
+                foreach (string tagName in stringTags.Split(","))
+                {
+                    Tag? tag = await _context.Tags.FirstOrDefaultAsync(t => t.Name.Trim().ToLower() == tagName.Trim().ToLower());
+
+                    if (tag != null)
+                    {
+                        blogPost.Tags.Add(tag);
+                    }
+                    else
+                    {
+                        Tag newTag = new Tag() { Name = tagName };
+                        _context.Add(newTag);
+
+                        blogPost.Tags.Add(newTag);
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        //public Task<bool> IsTagOnBlogPostAsync(int tagId, int blogPostId) { }
+
+        //public Task RemoveAllBlogPostTagsAsync(int blogPostId) { }
+
+        //public IEnumerable<BlogPost> Search(string searchString) { }
+
+        public async Task<bool> ValidateSlugAsync(string title, int blogId)
+        {
+            try
+            {
+                string newSlug = StringHelper.BlogSlug(title);
+
+                if(blogId == 0)
+                {
+                    return !await _context.BlogPosts.AnyAsync(b => b.Slug == newSlug);
+                }
+                else
+                {
+                    BlogPost? blogPost = await _context.BlogPosts.AsNoTracking().FirstOrDefaultAsync(b => b.Id == blogId);
+
+                    string oldSlug = blogPost?.Slug!;
+
+                    if (!string.Equals(oldSlug, newSlug))
+                    {
+                        return !await _context.BlogPosts.AnyAsync(b => b.Id != blogPost!.Id && b.Slug == newSlug);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        Task IBlogPostService.AddTagsToBlogPostAsync(IEnumerable<int> tagIds, int blogPostId)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> IBlogPostService.IsTagOnBlogPostAsync(int tagId, int blogPostId)
+        {
+            throw new NotImplementedException();
+        }
+
+        async Task IBlogPostService.RemoveAllBlogPostTagsAsync(int blogPostId)
+        {
+            try
+            {
+                BlogPost? blogPost = await _context.BlogPosts
+                                                   .Include(b => b.Tags)
+                                                   .FirstOrDefaultAsync(b => b.Id == blogPostId);
+
+                if (blogPost != null)
+                {
+                    blogPost.Tags.Clear();
+                    _context.Update(blogPost);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        IEnumerable<BlogPost> IBlogPostService.Search(string searchString)
+        {
+            throw new NotImplementedException();
         }
     }
 }

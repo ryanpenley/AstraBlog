@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using AstraBlog.Services.Interfaces;
 using AstraBlog.Services;
+using AstraBlog.Helpers;
 
 namespace AstraBlog.Controllers
 {
@@ -46,14 +47,14 @@ namespace AstraBlog.Controllers
 
         // GET: BlogPosts/Details/5 **********************************************************************************
         [AllowAnonymous]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string? slug)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(slug))
             {
                 return NotFound();
             }
 
-            var blogPost = await _blogPostService.GetBlogPostAsync(id.Value);
+            var blogPost = await _blogPostService.GetBlogPostAsync(slug);
 
             if (blogPost == null)
             {
@@ -82,15 +83,21 @@ namespace AstraBlog.Controllers
         // POST: BlogPosts/Create ******************************************************************************
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,CategoryList")] BlogPost blogPost, int selectedCategory, IEnumerable<int> selectedTags
-            )
+        public async Task<IActionResult> Create([Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,CategoryId")] BlogPost blogPost, IEnumerable<int> selectedTags, string? stringTags)
         {
-
+            ModelState.Remove("Slug");
 
             if (ModelState.IsValid)
             {
-                //TODO: Slug BlogPost
+                // Slug BlogPost
+                if (!await _blogPostService.ValidateSlugAsync(blogPost.Title!, blogPost.Id))
+                {
+                    ModelState.AddModelError("Title", "A similar Title or Slug is already in use.");
 
+                    ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
+                    return View(blogPost);
+                }
+                blogPost.Slug = StringHelper.BlogSlug(blogPost.Title!);
 
 
                 // Format Date
@@ -104,14 +111,19 @@ namespace AstraBlog.Controllers
                 }
 
 
-                blogPost.CategoryId = selectedCategory;
-
                 // calls service to save new blogpost
                 await _blogPostService.AddBlogPostAsync(blogPost);
 
 
+                // Add Tag(s) to BlogPost
+                if (!string.IsNullOrWhiteSpace(stringTags))
+                {
+                    await _blogPostService.AddTagsToBlogPostAsync(stringTags, blogPost.Id);
+                }
 
-                return RedirectToAction(nameof(Index));
+
+
+                    return RedirectToAction(nameof(AdminPage));
             }
             
             ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
@@ -140,7 +152,12 @@ namespace AstraBlog.Controllers
             }
 
 
-            ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
+            ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name", blogPost.CategoryId);
+
+            IEnumerable<string> tagNames = blogPost.Tags.Select(t => t.Name!);
+            ViewData["Tags"] = string.Join(",", tagNames);
+
+
             return View(blogPost);
         }
 
@@ -151,7 +168,7 @@ namespace AstraBlog.Controllers
         // POST: BlogPosts/Edit/5 **********************************************************************************************************
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,ImageData,ImageType,CategoryList")] BlogPost blogPost, int selectedCategory)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,ImageData,ImageType,CategoryList")] BlogPost blogPost, int selectedCategory, string stringTags)
         {
             if (id != blogPost.Id)
             {
@@ -162,6 +179,17 @@ namespace AstraBlog.Controllers
             {
                 try
                 {
+                    // Edit Slug BlogPost
+                    if (!await _blogPostService.ValidateSlugAsync(blogPost.Title!, blogPost.Id))
+                    {
+                        ModelState.AddModelError("Title", "A similar Title or Slug is already in use.");
+
+                        ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
+                        return View(blogPost);
+                    }
+                    blogPost.Slug = StringHelper.BlogSlug(blogPost.Title!);
+
+
                     // Reformat Created Date
                     blogPost.Created = DataUtility.GetPostGresDate(blogPost.Created);
                     blogPost.Updated = DataUtility.GetPostGresDate(DateTime.UtcNow);
@@ -173,13 +201,28 @@ namespace AstraBlog.Controllers
                         blogPost.ImageType = blogPost.ImageFile.ContentType;
                     }
 
+                    // Slug BlogPost
+                    if (!await _blogPostService.ValidateSlugAsync(blogPost.Title!, blogPost.Id))
+                    {
+                        ModelState.AddModelError("Title", "A similar Title or Slug is already in use.");
+
+                        ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
+                        return View(blogPost);
+                    }
 
 
-                    blogPost.CategoryId = selectedCategory;
-
-
-
+                    // Call service to Update BlogPost
                     await _blogPostService.UpdateBlogPostAsync(blogPost);
+
+
+                    // Edit Tags
+                    await _blogPostService.RemoveAllBlogPostTagsAsync(blogPost.Id);
+
+
+                    if (!string.IsNullOrWhiteSpace(stringTags))
+                    {
+                        await _blogPostService.AddTagsToBlogPostAsync(stringTags, blogPost.Id);
+                    }
 
                 }
                 catch (DbUpdateConcurrencyException)
@@ -193,7 +236,7 @@ namespace AstraBlog.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(AdminPage));
             }
             ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
             return View(blogPost);
@@ -231,7 +274,7 @@ namespace AstraBlog.Controllers
                 await _blogPostService.DeleteBlogPostAsync(blogPost);
             }
             
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AdminPage));
         }
 
         private async Task<bool> BlogPostExists(int id)

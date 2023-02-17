@@ -10,7 +10,21 @@ namespace AstraBlog.Services.Interfaces
 
         public Task UpdateBlogPostAsync(BlogPost blogPost);
 
+        /// <summary>
+        /// Get a single BlogPost by Id (integer)
+        /// </summary>
+        /// <param name="blogPostId"></param>
+        /// <returns></returns>
         public Task<BlogPost> GetBlogPostAsync(int blogPostId);
+        
+
+
+        /// <summary>
+        /// Get a single BlogPost by Id (slug)
+        /// </summary>
+        /// <param name="blogPostId"></param>
+        /// <returns></returns>
+        public Task<BlogPost> GetBlogPostAsync(string blogPostSlug);
 
         public Task DeleteBlogPostAsync(BlogPost blogPost);
         #endregion
@@ -41,5 +55,28 @@ namespace AstraBlog.Services.Interfaces
         public Task DeleteCategoryAsync(Category category);
 
         #endregion
+
+        #region Additional Methods
+
+        public Task<IEnumerable<Tag>> GetTagsAsync();
+
+        public Task AddTagsToBlogPostAsync(string stringTags, int blogPostId);
+
+        public Task AddTagsToBlogPostAsync(IEnumerable<int> tagIds, int blogPostId);
+
+        public Task<bool> IsTagOnBlogPostAsync(int tagId, int blogPostId);
+
+        public Task RemoveAllBlogPostTagsAsync(int blogPostId);
+
+        public IEnumerable<BlogPost> Search(string searchString);
+
+        public Task<bool> ValidateSlugAsync(string title, int blogId);
+        #endregion
+
+
+
+
+
+
     }
 }
