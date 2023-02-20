@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using AstraBlog.Data;
 using AstraBlog.Models;
 using Microsoft.AspNetCore.Identity;
+using AstraBlog.Services;
+using AstraBlog.Services.Interfaces;
+using X.PagedList;
 
 namespace AstraBlog.Controllers
 {
@@ -15,11 +18,14 @@ namespace AstraBlog.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BlogUser> _userManager;
+        readonly IBlogPostService _blogPostService;
 
-        public CategoriesController(ApplicationDbContext context, UserManager<BlogUser> userManager)
+        public CategoriesController(ApplicationDbContext context, UserManager<BlogUser> userManager, IBlogPostService blogPostService)
         {
             _context = context;
             _userManager = userManager;
+            _blogPostService = blogPostService;
+            
         }
 
         // GET: Categories
@@ -31,19 +37,25 @@ namespace AstraBlog.Controllers
         }
 
         // GET: Categories/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int? pageNum)
         {
             if (id == null || _context.Categories == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _blogPostService.GetCategoryAsync(id.Value);
             if (category == null)
             {
                 return NotFound();
             }
+
+            // add pageSize and page = pageNum
+            int pageSize = 3;
+            int page = pageNum ?? 1;
+
+            IPagedList
+
 
             return View(category);
         }

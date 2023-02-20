@@ -15,7 +15,7 @@
             @foreach (Category category in (await _BlogService.GetCategoriesAsync()).Take(4))
             {
                 <li class="cat-item">
-                    <a href="#" class="inner">
+                    <a asp-action="Details" asp-controller="Categories" asp-route-id="@category.Id"  class="inner">
                         <div class="thumbnail">
                             <img src="@_ImageService.ConvertByteArrayToFile(category.ImageData!,category.ImageType!,(int)DefaultImage.BlogPostImage)" alt="">
                         </div>
@@ -32,54 +32,57 @@
     <!-- Start Single Widget  -->
     <div class="axil-single-widget widget widget_search mb--30">
         <h5 class="widget-title">Search</h5>
-        <form action="#">
+        <form asp-action="SearchIndex" asp-controller="Home" method="post">
             <div class="axil-search form-group">
                 <button type="submit" class="search-button"><i class="fal fa-search"></i></button>
-                <input type="text" class="form-control" placeholder="Search">
+                <input type="text" class="form-control" placeholder="Search" name="searchString">
             </div>
         </form>
     </div>
     <!-- End Single Widget  -->
-        <!-- Start Popular on Humble Hacker Sidebar Widget  -->    
+    <!-- Start Popular on Humble Hacker Sidebar Widget  -->
     <div class="axil-single-widget widget widget_postlist mb--30">
         <h5 class="widget-title">Popular on Humble Hacker</h5>
-            <!-- Start List of Posts -->        
-            <div class="post-medium-block">
-                @foreach (BlogPost blogPost in (await _BlogService.GetPopularPostsAsync()).Take(3))
-                {               
-                    <div class="content-block post-medium mb--20">
-                        <div class="post-thumbnail">                        
-                            <a asp-action="Details" asp-controller="BlogPosts" asp-route-slug="@blogPost.Slug">                            
-                                <img src="@_ImageService.ConvertByteArrayToFile(blogPost.ImageData!, blogPost.ImageType!, (int)DefaultImage.BlogPostImage)" alt="Post Images" />                        </a>                    </div>                    <div class="post-content">
-                            <h6 class="title">
-                                <a href="post-details.html">
-                                    @blogPost.Title
-                                </a>
-                            </h6>                        
-                            <div class="post-meta">                            
-                                <ul class="post-meta-list">                                
-                                    <li>@blogPost.Created</li>                                                         
-                                </ul>                        
-                                </div>
+        <!-- Start List of Posts -->
+        <div class="post-medium-block">
+            @foreach (BlogPost blogPost in (await _BlogService.GetPopularPostsAsync()).Take(3))
+            {
+                <div class="content-block post-medium mb--20">
+                    <div class="post-thumbnail">
+                        <a asp-action="Details" asp-controller="BlogPosts" asp-route-slug="@blogPost.Slug">
+                            <img src="@_ImageService.ConvertByteArrayToFile(blogPost.ImageData!, blogPost.ImageType!, (int)DefaultImage.BlogPostImage)" alt="Post Images" />
+                        </a>
+                    </div>                    
+                    <div class="post-content">
+                        <h6 class="title">
+                            <a href="post-details.html">
+                                @blogPost.Title
+                            </a>
+                        </h6>
+                        <div class="post-meta">
+                            <ul class="post-meta-list">
+                                <li>@blogPost.Created</li>
+                            </ul>
                         </div>
                     </div>
-                }
-            </div>        
-        </div>    
-        <!-- End Popular on Humble Hacker Sidebar Widget  -->
+                </div>
+            }
+        </div>
     </div>
-    <!-- Start Social Icons Widget  -->
-    <div class="axil-single-widget widget widget_social mb--30">
-        <h5 class="widget-title">Stay In Touch</h5>
+    <!-- End Popular on Humble Hacker Sidebar Widget  -->
+</div>
+<!-- Start Social Icons Widget  -->
+<div class="axil-single-widget widget widget_social mb--30">
+    <h5 class="widget-title">Stay In Touch</h5>
 
-        <!-- Social Icons  -->
-        <ul class="social-icon md-size justify-content-center">
+    <!-- Social Icons  -->
+    <ul class="social-icon md-size justify-content-center">
         <li><a href="https://twitter.com/ryanpenleydev"><i class="fab fa-twitter"></i></a></li>
         <li><a href="https://www.linkedin.com/in/ryan-penley-459892102/"><i class="fab fa-linkedin-in"></i></a></li>
-        </ul>
+    </ul>
 
-        <!-- End Social Icon -->
-    </div>
-    <!-- End Social Icons Widget  -->
+    <!-- End Social Icon -->
+</div>
+<!-- End Social Icons Widget  -->
 </div>
 <!-- End Sidebar Area  -->

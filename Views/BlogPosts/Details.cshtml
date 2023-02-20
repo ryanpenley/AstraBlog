@@ -96,8 +96,11 @@
                     </h1>
 
                     @Html.Raw(Model.Content)
-                    <div class="tagcloud">
-                        @Html.DisplayFor(model => model.Tags)
+                    <div class="tagcloud mt-3">
+                        @foreach (Tag tag in Model.Tags)
+                        {
+                            <a asp-controller="Tags" asp-action="Details" asp-route-id="@tag.Id">@tag.Name</a>
+                        }
                     </div>
                     <!-- End Main Content  -->
 
@@ -115,10 +118,10 @@
                     <!-- Start Social Sharing  -->
 
 
-                    <!-- Start Author Area  -->
+@*                    <!-- Start Author Area  -->
                     <partial name="_AuthorArea" />
                     <!-- End Author Area  -->
-
+*@
 
                     <!-- Start Comment Form Area  -->
                     <div class="axil-comment-area">
