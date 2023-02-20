@@ -1,6 +1,10 @@
-﻿@model IEnumerable<AstraBlog.Models.BlogPost>
+﻿@model IPagedList<AstraBlog.Models.BlogPost>
+
 @using AstraBlog.Enums;
 @using AstraBlog.Services.Interfaces
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 
 @inject IImageService _ImageService
 @inject IBlogPostService _BlogService
@@ -29,7 +33,20 @@
                     <partial name="_BlogCard" model="@blogPost"/>
                 }
 
+                <div>
+                    <div>
+                        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                    </div>
 
+                    @Html.PagedListPager(Model, pageNum => Url.Action("Index", new{ pageNum }),
+                    new PagedListRenderOptions
+                    {
+                        LiElementClasses = new string[] {"my-page-item"},
+                        PageClasses = new string[] {"my-page-link"}
+                    }
+                    )
+
+                </div>
 
 
             </div>
