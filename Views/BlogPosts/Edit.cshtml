@@ -2,6 +2,7 @@
 @using AstraBlog.Services.Interfaces
 
 @inject IImageService _ImageService
+@inject IBlogPostService _BlogPostService
 @model AstraBlog.Models.BlogPost
 @{
     ViewData["Title"] = "Edit";
@@ -9,13 +10,13 @@
 
 
 <main class="container mt-5">
-    <form asp-action="Create" enctype="multipart/form-data">
+    <form asp-action="Edit" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" asp-for="Id" />
-                    <input type="hidden" asp-for="Created" />
-                    <input type="hidden" asp-for="ImageData" />
-                    <input type="hidden" asp-for="ImageType" />
-                    <input type="hidden" asp-for="Slug" />
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Created" />
+        <input type="hidden" asp-for="ImageData" />
+        <input type="hidden" asp-for="ImageType" />
+        <input type="hidden" asp-for="Slug" />
         <div class="row">
             <div class="col-12 col-lg-4">
                 <div class="form-group">
@@ -34,8 +35,8 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="ImageFile" class="control-label">Blog Post Image</label>
-                    <img class="img-fluid border rounded-3 m-2" style="max-height: 250px;" 
-                    src="@_ImageService.ConvertByteArrayToFile(Model.ImageData!, Model.ImageType!, (int)DefaultImage.BlogPostImage)" alt="Post Images" id="blogImage">
+                    <img class="img-fluid border rounded-3 m-2" style="max-height: 250px;"
+                         src="@_ImageService.ConvertByteArrayToFile(Model.ImageData!, Model.ImageType!, (int)DefaultImage.BlogPostImage)" alt="Post Images" id="blogImage">
                     <input asp-for="ImageFile" type="file" class="form-control mt-3 pt-2" accept=".png,.jpg,.jpeg,.gif"
                            onchange="document.getElementById('blogImage').src = window.URL.createObjectURL(this.files[0])" />
                 </div>
@@ -49,6 +50,13 @@
                 <div class="form-group" id="tagContainer">
                     <label asp-for="Tags"></label>
                     <input class="form-control" type="text" id="tagInput" asp-items="ViewBag.Tags" name="StringTags" autocomplete="off" />
+
+                    <div class="tagcloud axil-single-widget mt-2" style="display: none;">
+                        @foreach (Tag tag in await _BlogPostService.GetTagsAsync())
+                        {
+                            <a onclick="addTag(this)">@tag.Name</a>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
@@ -58,7 +66,7 @@
                     <input class="form-check-input me-3" asp-for="IsPublished" />&nbsp; Publish?
                 </label>
             </div>
-            <input type="submit" value="Create" class="btn btn-primary" />
+            <input type="submit" value="Edit" class="btn btn-primary" />
         </div>
     </form>
     <div class="mt-5">
@@ -86,5 +94,80 @@
                 console.warn('Build id: xx09iayzufkn-lkt434h3lx2z');
                 console.error(error);
             });
+    </script>
+
+    <script>
+        function addTag(el) {
+            let input = document.getElementById('tagInput');
+
+            if (el.classList.contains('disabledTag')) {
+                input.focus();
+                return;
+            }
+
+            let tagName = el.textContent + ', ';
+
+            let currentTags = input.value.split(',');
+
+            //remove partially entered tag
+            currentTags.pop();
+
+            //add the full tag name of the clicked tag
+            currentTags.push(tagName);
+
+            input.value = currentTags.reduce((inputString, currentString) => inputString + ', ' + currentString.trim());
+
+            el.classList.add('disabledTag');
+
+            input.focus();
+        }
+
+        // override the jQuery ":contains" selector to make it case insensitive
+        jQuery.expr[':'].contains = function (a, i, m) {
+            return $(a).text().toUpperCase()
+                .indexOf(m[3].toUpperCase()) >= 0;
+        };
+
+        $(document).ready(function () {
+            // show tag cloud when the input is focused
+            $('#tagInput').focus(function () {
+                $('.tagcloud').show(300);
+            });
+
+            $('form *:not("#tagInput")').focus(function () {
+                if ($('.tagcloud').is(':visible')) {
+                    $('.tagcloud').hide(300);
+                }
+
+            });
+
+            // search tag cloud
+            $('#tagInput').keyup(function () {
+                // clear all disabledTag classes
+                $('.disabledTag').each(function () {
+                    $(this).removeClass('disabledTag');
+                });
+
+                let inputTags = $(this).val().split(',');
+                let searchString = inputTags.pop().trim();
+
+                $('.tagcloud > a:not( :contains(' + searchString + ') )').hide();
+                $('.tagcloud > a:contains(' + searchString + ')').show();
+
+                inputTags.forEach(tag => {
+                    if (tag.trim() == '') return;
+
+                    let containingTag = $('.tagcloud > a:contains(' + tag.trim() + ')')
+                    if (containingTag.text().toLowerCase() == tag.trim().toLowerCase()) {
+
+                        containingTag.addClass('disabledTag');
+
+                    }
+                });
+
+
+            })
+
+        });
     </script>
 }

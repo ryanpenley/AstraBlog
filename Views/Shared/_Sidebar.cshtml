@@ -1,5 +1,4 @@
-﻿@model IEnumerable<AstraBlog.Models.BlogPost>
-@using AstraBlog.Enums;
+﻿@using AstraBlog.Enums;
 @using AstraBlog.Services.Interfaces
 
 @inject IImageService _ImageService
@@ -41,52 +40,42 @@
         </form>
     </div>
     <!-- End Single Widget  -->
-    <!-- Start Single Widget  -->
+        <!-- Start Popular on Humble Hacker Sidebar Widget  -->    
     <div class="axil-single-widget widget widget_postlist mb--30">
         <h5 class="widget-title">Popular on Humble Hacker</h5>
-        <!-- Start Post List  -->
-        <div class="post-medium-block">
-
-            <!-- Start Popular Blog Posts Widget  -->
-            <div class="content-block post-medium mb--20">
+            <!-- Start List of Posts -->        
+            <div class="post-medium-block">
                 @foreach (BlogPost blogPost in (await _BlogService.GetPopularPostsAsync()).Take(3))
-                {
-                    <div class="post-thumbnail">
-                        <!--TODO: make image clickable-->
-                        <a>
-                            <img src="@_ImageService.ConvertByteArrayToFile(blogPost.ImageData!,blogPost.ImageType!,(int)DefaultImage.BlogPostImage)" alt="Post Images">
-                        </a>
-                    </div>
-                    <div class="post-content">
-                        <h6 class="title">
-                            @blogPost.Title
-                            <a asp-action="Details" asp-controller="BlogPosts" asp-route-slug="@blogPost.Slug" />
-                        </h6>
-                        <div class="post-meta">
-                            <ul class="post-meta-list">
-                                <li>@blogPost.Created</li>
-                            </ul>
+                {               
+                    <div class="content-block post-medium mb--20">
+                        <div class="post-thumbnail">                        
+                            <a asp-action="Details" asp-controller="BlogPosts" asp-route-slug="@blogPost.Slug">                            
+                                <img src="@_ImageService.ConvertByteArrayToFile(blogPost.ImageData!, blogPost.ImageType!, (int)DefaultImage.BlogPostImage)" alt="Post Images" />                        </a>                    </div>                    <div class="post-content">
+                            <h6 class="title">
+                                <a href="post-details.html">
+                                    @blogPost.Title
+                                </a>
+                            </h6>                        
+                            <div class="post-meta">                            
+                                <ul class="post-meta-list">                                
+                                    <li>@blogPost.Created</li>                                                         
+                                </ul>                        
+                                </div>
                         </div>
                     </div>
                 }
-            </div>
-            <!-- End Popular Blog Posts Widget -->
-        </div>
-        <!-- End Post List  -->
-
+            </div>        
+        </div>    
+        <!-- End Popular on Humble Hacker Sidebar Widget  -->
     </div>
-    <!-- End Single Widget  -->
     <!-- Start Social Icons Widget  -->
     <div class="axil-single-widget widget widget_social mb--30">
         <h5 class="widget-title">Stay In Touch</h5>
 
         <!-- Social Icons  -->
         <ul class="social-icon md-size justify-content-center">
-            <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-            <li><a href="#"><i class="fab fa-slack"></i></a></li>
-            <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+        <li><a href="https://twitter.com/ryanpenleydev"><i class="fab fa-twitter"></i></a></li>
+        <li><a href="https://www.linkedin.com/in/ryan-penley-459892102/"><i class="fab fa-linkedin-in"></i></a></li>
         </ul>
 
         <!-- End Social Icon -->

@@ -168,7 +168,7 @@ namespace AstraBlog.Controllers
         // POST: BlogPosts/Edit/5 **********************************************************************************************************
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile,ImageData,ImageType,CategoryList")] BlogPost blogPost, int selectedCategory, string stringTags)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageData,ImageType,CategoryId")] BlogPost blogPost, string? stringTags)
         {
             if (id != blogPost.Id)
             {
@@ -187,11 +187,13 @@ namespace AstraBlog.Controllers
                         ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
                         return View(blogPost);
                     }
+
                     blogPost.Slug = StringHelper.BlogSlug(blogPost.Title!);
 
 
                     // Reformat Created Date
                     blogPost.Created = DataUtility.GetPostGresDate(blogPost.Created);
+                    // Change updated date
                     blogPost.Updated = DataUtility.GetPostGresDate(DateTime.UtcNow);
 
                     // Reformat if Image was Updated
@@ -218,7 +220,7 @@ namespace AstraBlog.Controllers
                     // Edit Tags
                     await _blogPostService.RemoveAllBlogPostTagsAsync(blogPost.Id);
 
-
+                    // Add Tag(s) back to 
                     if (!string.IsNullOrWhiteSpace(stringTags))
                     {
                         await _blogPostService.AddTagsToBlogPostAsync(stringTags, blogPost.Id);
@@ -236,7 +238,7 @@ namespace AstraBlog.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(AdminPage));
+                return RedirectToAction("Index", "Home");
             }
             ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name");
             return View(blogPost);
