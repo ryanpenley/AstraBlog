@@ -168,7 +168,7 @@ namespace AstraBlog.Controllers
         // POST: BlogPosts/Edit/5 **********************************************************************************************************
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageData,ImageType,CategoryId")] BlogPost blogPost, string? stringTags)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Abstract,Content,Created,Updated,Slug,IsDeleted,IsPublished,ImageFile, ImageData,ImageType,CategoryId")] BlogPost blogPost, string? stringTags)
         {
             if (id != blogPost.Id)
             {

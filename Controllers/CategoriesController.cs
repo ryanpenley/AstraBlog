@@ -36,7 +36,7 @@ namespace AstraBlog.Controllers
                           Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
         }
 
-        // GET: Categories/Details/5
+        // GET: Categories/Details/5*************************************************************************************************
         public async Task<IActionResult> Details(int? id, int? pageNum)
         {
             if (id == null || _context.Categories == null)
@@ -45,22 +45,25 @@ namespace AstraBlog.Controllers
             }
 
             var category = await _blogPostService.GetCategoryAsync(id.Value);
+
             if (category == null)
             {
                 return NotFound();
             }
 
             // add pageSize and page = pageNum
-            int pageSize = 3;
+
             int page = pageNum ?? 1;
 
-            IPagedList
+            ViewData["Page"] = page;
+
+            //IPagedList
 
 
             return View(category);
         }
 
-        // GET: Categories/Create
+        // GET: Categories/Create*********************************************************************************************************
         public async Task<IActionResult> CreateAsync()
         {
 

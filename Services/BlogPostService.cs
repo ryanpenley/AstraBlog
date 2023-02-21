@@ -97,6 +97,7 @@ namespace AstraBlog.Services
                                                   .Include(b => b.Category)
                                                   .Include(b => b.Tags)
                                                   .Include(b => b.Comments)
+                                                        .ThenInclude(c => c.Author)
                                                   .FirstOrDefaultAsync(b => b.Slug == blogPostSlug);
                 return blogPost!;
             }
@@ -285,7 +286,7 @@ namespace AstraBlog.Services
         }
 
 
-        public async Task<IEnumerable<Tag>> GetTagsAsync ()
+        public async Task<IEnumerable<Tag>> GetTagsAsync()
         {
             try
             {
@@ -294,6 +295,22 @@ namespace AstraBlog.Services
                                                       .ToListAsync();
 
                 return tags;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<Tag> GetTagAsync(int? tagId)
+        {
+            try
+            {
+                Tag? tag = await _context.Tags
+                                        .Include(t => t.BlogPosts)
+                                        .FirstOrDefaultAsync(t => t.Id == tagId);
+
+                return tag!;
             }
             catch (Exception)
             {

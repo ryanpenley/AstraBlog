@@ -11,8 +11,43 @@
 @inject IBlogPostService _BlogService
 
 @{
-    ViewData["Title"] = "Details";
+    int pageSize = 3;
+    int pageNum = ViewBag.Page;
+
+    IPagedList<BlogPost> pageOfPosts = Model.BlogPosts
+                                            .Where(bp => bp.IsPublished == true && bp.IsDeleted == false)
+                                            .ToPagedList(pageNum, pageSize);
 }
+
+<!-- Start Category Details Area-->
+<div class="axil-author-area axil-author-banner bg-color-grey">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="about-author">
+                    <div class="media">
+                        <div class="thumbnail">
+                            <a href="#">
+                                <img src="@_ImageService.ConvertByteArrayToFile(Model.ImageData!, Model.ImageType!, (int)DefaultImage.CategoryImage)" alt="Author Images">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <div class="author-info">
+                                <h1 class="title"><a href="#">@Model.Name</a></h1>
+                            </div>
+                            <div class="content">
+                                <p class="b1 description">
+                                    @Model.Description
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Category Details Area-->
 
 
 <!-- Start Post List Wrapper  -->
@@ -21,31 +56,27 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="page-title">
-                    <h2 class="title mb--40">Articles By This Author</h2>
+                    <h2 class="title mb--40">Articles in @Model.Name Category</h2>
                 </div>
             </div>
             <div class="col-lg-8 col-xl-8">
                 @*ForEach BlogPost*@
 
-                @foreach (var blogPost in Model.BlogPosts)
+                @foreach (var blogPost in pageOfPosts)
                 {
                     <partial name="_BlogCard" model="@blogPost"/>
                 }
 
-@*                <div>
-                    <div>
-                        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-                    </div>
+                <div id="page-selector" class="mt-4">
 
-                    @Html.PagedListPager(Model, pageNum => Url.Action("Index", new{ pageNum }),
-                    new PagedListRenderOptions
-                    {
-                        LiElementClasses = new string[] {"my-page-item"},
-                        PageClasses = new string[] {"my-page-link"}
+                    @Html.PagedListPager(pageOfPosts, pageNum => Url.Action("Details", new{ id = Model.Id, pagenum = pageNum }),
+                    new PagedListRenderOptions{
+                    LiElementClasses = new string[] {"my-page-item"},
+                    PageClasses = new string[] {"my-page-link"}
                     }
                     )
 
-                </div>*@
+                </div>
 
 
             </div>

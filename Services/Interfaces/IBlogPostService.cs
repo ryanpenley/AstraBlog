@@ -60,6 +60,8 @@ namespace AstraBlog.Services.Interfaces
 
         public Task<IEnumerable<Tag>> GetTagsAsync();
 
+        public Task<Tag> GetTagAsync(int? tagId);
+
         public Task AddTagsToBlogPostAsync(string stringTags, int blogPostId);
 
         public Task AddTagsToBlogPostAsync(IEnumerable<int> tagIds, int blogPostId);

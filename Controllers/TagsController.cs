@@ -7,16 +7,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AstraBlog.Data;
 using AstraBlog.Models;
+using Microsoft.AspNetCore.Identity;
+using AstraBlog.Services.Interfaces;
 
 namespace AstraBlog.Controllers
 {
     public class TagsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BlogUser> _userManager;
+        readonly IBlogPostService _blogPostService;
 
-        public TagsController(ApplicationDbContext context)
+        public TagsController(ApplicationDbContext context, UserManager<BlogUser> userManager, IBlogPostService blogPostService)
         {
             _context = context;
+            _userManager = userManager;
+            _blogPostService = blogPostService;
         }
 
         // GET: Tags
@@ -28,19 +34,23 @@ namespace AstraBlog.Controllers
         }
 
         // GET: Tags/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int? pageNum)
         {
             if (id == null || _context.Tags == null)
             {
                 return NotFound();
             }
 
-            var tag = await _context.Tags
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var tag = await _blogPostService.GetTagAsync(id.Value);
+
             if (tag == null)
             {
                 return NotFound();
             }
+
+            int page = pageNum ?? 1;
+
+            ViewData["Page"] = page;
 
             return View(tag);
         }
