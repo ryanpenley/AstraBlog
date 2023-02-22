@@ -33,6 +33,13 @@ namespace AstraBlog.Controllers
             return View(model);
         }
 
+        //public Task<IActionResult> ContactMe(EmailData emailData)
+        //{
+        //    ModelState.Remove(emailData);
+
+        //    return View();
+        //}
+
 
         public IActionResult SearchIndex(string? searchString, int? pageNum)
         {
