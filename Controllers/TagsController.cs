@@ -16,7 +16,7 @@ namespace AstraBlog.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BlogUser> _userManager;
-        readonly IBlogPostService _blogPostService;
+        private readonly IBlogPostService _blogPostService;
 
         public TagsController(ApplicationDbContext context, UserManager<BlogUser> userManager, IBlogPostService blogPostService)
         {
@@ -28,9 +28,9 @@ namespace AstraBlog.Controllers
         // GET: Tags
         public async Task<IActionResult> Index()
         {
-              return _context.Tags != null ? 
-                          View(await _context.Tags.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Tags'  is null.");
+            IEnumerable<Tag> model = await _blogPostService.GetTagsAsync();
+
+            return View(model);
         }
 
         // GET: Tags/Details/5
@@ -41,7 +41,7 @@ namespace AstraBlog.Controllers
                 return NotFound();
             }
 
-            var tag = await _blogPostService.GetTagAsync(id.Value);
+            Tag tag = await _blogPostService.GetTagAsync(id.Value);
 
             if (tag == null)
             {
@@ -62,18 +62,17 @@ namespace AstraBlog.Controllers
         }
 
         // POST: Tags/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] Tag tag)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(tag);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+              await _blogPostService.AddNewTagAsync(tag);
+          
+              return RedirectToAction(nameof(Index));
             }
+
             return View(tag);
         }
 
@@ -85,7 +84,8 @@ namespace AstraBlog.Controllers
                 return NotFound();
             }
 
-            var tag = await _context.Tags.FindAsync(id);
+            Tag tag = await _blogPostService.GetTagAsync(id.Value);
+
             if (tag == null)
             {
                 return NotFound();
@@ -94,8 +94,6 @@ namespace AstraBlog.Controllers
         }
 
         // POST: Tags/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Tag tag)

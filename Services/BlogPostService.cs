@@ -302,12 +302,13 @@ namespace AstraBlog.Services
                 throw;
             }
         }
-        public async Task<Tag> GetTagAsync(int? tagId)
+        public async Task<Tag> GetTagAsync(int tagId)
         {
             try
             {
                 Tag? tag = await _context.Tags
                                         .Include(t => t.BlogPosts)
+                                            .ThenInclude(b => b.Category)
                                         .FirstOrDefaultAsync(t => t.Id == tagId);
 
                 return tag!;
@@ -318,6 +319,7 @@ namespace AstraBlog.Services
                 throw;
             }
         }
+
 
         //public Task AddTagsToBlogPostAsync(IEnumerable<int> tagIds, int blogPostId) { }
 
@@ -460,6 +462,20 @@ namespace AstraBlog.Services
                     return blogPosts;
                 }
 
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task AddNewTagAsync(Tag tag)
+        {
+            try
+            {
+                _context.Add(tag);
+                await _context.SaveChangesAsync();
             }
             catch (Exception)
             {

@@ -151,11 +151,13 @@ namespace AstraBlog.Controllers
                 return NotFound();
             }
 
-
-            ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name", blogPost.CategoryId);
-
             IEnumerable<string> tagNames = blogPost.Tags.Select(t => t.Name!);
             ViewData["Tags"] = string.Join(",", tagNames);
+
+
+            ViewData["BlogContent"] = blogPost.Content;
+            ViewData["CategoryList"] = new SelectList(await _blogPostService.GetCategoriesAsync(), "Id", "Name", blogPost.CategoryId);
+
 
 
             return View(blogPost);
@@ -264,13 +266,13 @@ namespace AstraBlog.Controllers
         // POST: BlogPosts/Delete/5 ********************************************************************************************
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var blogPost = await _blogPostService.GetBlogPostAsync(id);
+            var blogPost = await _blogPostService.GetBlogPostAsync(id.Value);
             if (blogPost != null)
             {
                 await _blogPostService.DeleteBlogPostAsync(blogPost);
