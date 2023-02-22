@@ -47,7 +47,7 @@
         <div class="post-medium-block">
             @foreach (BlogPost blogPost in (await _BlogService.GetPopularPostsAsync()).Take(3))
             {
-                <div class="content-block post-medium mb--20">
+                <div class="content-block post-medium mb--20" asp-action="Details" asp-controller="BlogPosts">
                     <div class="post-thumbnail">
                         <a asp-action="Details" asp-controller="BlogPosts" asp-route-slug="@blogPost.Slug">
                             <img src="@_ImageService.ConvertByteArrayToFile(blogPost.ImageData!, blogPost.ImageType!, (int)DefaultImage.BlogPostImage)" alt="Post Images" />
@@ -55,13 +55,14 @@
                     </div>                    
                     <div class="post-content">
                         <h6 class="title">
-                            <a href="post-details.html">
-                                @blogPost.Title
-                            </a>
+                            <a asp-action="Details" asp-controller="BlogPosts" asp-route-slug="@blogPost.Slug">
+                                @blogPost.Title </a>
                         </h6>
                         <div class="post-meta">
                             <ul class="post-meta-list">
+                                <a asp-action="Details" asp-controller="BlogPosts" asp-route-slug="@blogPost.Slug">
                                 <li>@blogPost.Created</li>
+                                </a>
                             </ul>
                         </div>
                     </div>
