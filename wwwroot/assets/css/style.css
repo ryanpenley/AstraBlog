@@ -11736,7 +11736,8 @@ Sidebar Styles
                 }
 
                     .axil-single-widget.widget_categories ul li.cat-item .inner .thumbnail img {
-                        width: 100%;
+                        width: 50px;
+                        height: 50px;
                         border-radius: 100%;
                     }
 
@@ -12058,6 +12059,7 @@ blockquote p {
         display: -webkit-flex;
         display: -ms-flexbox;
         display: flex;
+        position: fixed;
     }
 
     .about-author .thumbnail a img {

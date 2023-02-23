@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Drawing.Printing;
 using X.PagedList;
 
 namespace AstraBlog.Controllers
@@ -37,6 +38,20 @@ namespace AstraBlog.Controllers
             ViewData["SwalMessage"] = swalMessage;
 
             return View(model);
+        }
+
+        public async Task<IActionResult> PopularPosts(int? pageNum)
+        {
+
+            // add pageSize and page = pageNum
+
+            int pagesize = 3;
+            int page = pageNum ?? 1;
+            ViewData["Page"] = page;
+
+            IPagedList<BlogPost> model = (await _blogPostService.GetPopularPostsAsync()).ToPagedList(page,pagesize);
+
+            return View(model); 
         }
 
         public IActionResult Contact() 
