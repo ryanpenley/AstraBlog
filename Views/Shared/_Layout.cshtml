@@ -31,7 +31,7 @@
 <body>
     <partial name="_LogoutPartial" />
     <div class="main-wrapper">
-@*        <div class="mouse-cursor cursor-outer"></div>
+        @*        <div class="mouse-cursor cursor-outer"></div>
         <div class="mouse-cursor cursor-inner"></div>*@
 
 
@@ -44,20 +44,6 @@
                             <a>
                                 <img class="pb-1" src="/img/HumbleHackerNoBgLinedLogo.png" />
                             </a>
-@*                            <div id="my_switcher" class="my_switcher">
-                                <ul>
-                                    <li>
-                                        <a href="javascript: void(0);" data-theme="light" class="setColor light">
-                                            <span title="Light Mode">Light</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript: void(0);" data-theme="dark" class="setColor dark">
-                                            <span title="Dark Mode">Dark</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>*@
                         </div>
                     </div>
 
@@ -293,8 +279,7 @@
             </div>
         </div>
         <!-- End Mobile Menu Area  -->
-
-@RenderBody()
+        @RenderBody()
 
 
         <!-- Start Footer Area  -->
@@ -307,9 +292,23 @@
                             <!-- Start Post List  -->
                             <div class="inner d-flex align-items-center flex-wrap">
                                 <h5 class="follow-title mb--0 mr--20">Follow Us</h5>
-                                <ul class="social-icon color-tertiary md-size justify-content-start">
+                                <ul class="social-icon color-tertiary md-size justify-content-center">
                                     <li><a href="https://twitter.com/ryanpenleydev"><i class="fab fa-twitter"></i></a></li>
                                     <li><a href="https://www.linkedin.com/in/ryan-penley-459892102/"><i class="fab fa-linkedin-in"></i></a></li>
+                                </ul>
+                            </div>
+                            <div id="my_switcher" class="my_switcher align-items-center">
+                                <ul>
+                                    <li>
+                                        <a href="javascript: void(0);" data-theme="light" class="setColor light">
+                                            <span title="Light Mode">Light</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript: void(0);" data-theme="dark" class="setColor dark">
+                                            <span title="Dark Mode">Dark</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                             <!-- End Post List  -->
@@ -326,52 +325,16 @@
                             <div class="copyright-left">
                                 <div class="logo">
                                     <a href="index.html">
-                                        <img class="dark-logo" src="~/assets/images/logo/logo-black.png" alt="Logo Images">
-                                        <img class="light-logo" src="~/assets/images/logo/logo-white2.png" alt="Logo Images">
+                                        <img class="dark-logo" src="~/img/HumbleHackerNoBgLinedLogo.png" style="height:40;" alt="Logo Images">
+                                        <img class="light-logo" src="~/img/HumbleHackerNoBgLinedLogo.png" alt="Logo Images">
                                     </a>
                                 </div>
-                                <ul class="mainmenu justify-content-start">
-                                    <li>
-                                        <a class="hover-flip-item-wrapper" href="#">
-                                            <span class="hover-flip-item">
-                                                <span data-text="Contact Us">Contact Us</span>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="hover-flip-item-wrapper" href="#">
-                                            <span class="hover-flip-item">
-                                                <span data-text="Terms of Use">Terms of Use</span>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="hover-flip-item-wrapper" href="#">
-                                            <span class="hover-flip-item">
-                                                <span data-text="AdChoices">AdChoices</span>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="hover-flip-item-wrapper" href="#">
-                                            <span class="hover-flip-item">
-                                                <span data-text="Advertise with Us">Advertise with Us</span>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="hover-flip-item-wrapper" href="#">
-                                            <span class="hover-flip-item">
-                                                <span data-text="Blogar Store">Blogar Store</span>
-                                            </span>
-                                        </a>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
+
                         <div class="col-lg-3 col-md-12">
                             <div class="copyright-right text-start text-lg-end mt_md--20 mt_sm--20">
-                                <p class="b3">All Rights Reserved © 2022</p>
+                                <p class="b3">All Rights Reserved © 2023</p>
                             </div>
                         </div>
                     </div>
