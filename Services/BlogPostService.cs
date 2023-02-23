@@ -342,12 +342,16 @@ namespace AstraBlog.Services
                     {
                         blogPost.Tags.Add(tag);
                     }
-                    else
+                    else if (!string.IsNullOrWhiteSpace(tagName))
                     {
                         Tag newTag = new Tag() { Name = tagName };
                         _context.Add(newTag);
 
                         blogPost.Tags.Add(newTag);
+                    }
+                    else
+                    {
+                        continue;
                     }
                 }
                 await _context.SaveChangesAsync();
