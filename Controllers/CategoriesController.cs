@@ -18,14 +18,15 @@ namespace AstraBlog.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BlogUser> _userManager;
+        private readonly IImageService _imageService;
         readonly IBlogPostService _blogPostService;
 
-        public CategoriesController(ApplicationDbContext context, UserManager<BlogUser> userManager, IBlogPostService blogPostService)
+        public CategoriesController(ApplicationDbContext context, UserManager<BlogUser> userManager, IBlogPostService blogPostService, IImageService imageService)
         {
             _context = context;
             _userManager = userManager;
             _blogPostService = blogPostService;
-            
+            _imageService = imageService;
         }
 
         // GET: Categories
@@ -123,6 +124,13 @@ namespace AstraBlog.Controllers
             {
                 try
                 {
+                    // Reformat if Image was Updated
+                    if (category.ImageFile != null)
+                    {
+                        category.ImageData = await _imageService.ConvertFileToByteArrayAsync(category.ImageFile);
+                        category.ImageType = category.ImageFile.ContentType;
+                    }
+
                     _context.Update(category);
                     await _context.SaveChangesAsync();
                 }
