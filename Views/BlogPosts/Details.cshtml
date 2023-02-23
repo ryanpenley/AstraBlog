@@ -103,42 +103,22 @@
                         }
                     </div>
                     <!-- End Main Content  -->
-                    <!-- Start Social Sharing  -->
-                    <div class="social-share-block mt-3">
-@*                        <div class="post-like">
-                            <a href="#"><i class="fal fa-thumbs-up"></i><span>2.2k Like</span></a>
-                        </div>*@
-                        <ul class="social-icon icon-rounded-transparent md-size">
-                            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-                            <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
-                        </ul>
-                    </div>
-                    <!-- Start Social Sharing  -->
-                    @*                    <!-- Start Author Area  -->
-                    <partial name="_AuthorArea" />
-                    <!-- End Author Area  -->
-                    *@
+
                     <!-- Start Comment Respond  -->
                     <div class="comment-respond">
                         <h4 class="title">Post a comment</h4>
                         <form asp-action="Create" asp-controller="Comments" method="post">
                             <input type="hidden" asp-for="Id" name="BlogPostId" />
                             <input type="hidden" asp-for="Slug" />
-                            <p class="comment-notes">
-                                <span id="email-notes">
-                                    Your email address will not be
-                                    published.
-                                </span> Required fields are marked <span class="required">*</span>
-                            </p>
                             <div class="row row--10">
+                                @if (SignInManager.IsSignedIn(User))
+                                {
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label for="message">Leave a Reply</label>
+                                        <label for="message">Leave a Comment</label>
                                         <textarea id="Body" name="Body"></textarea>
                                     </div>
                                 </div>
-                                @if (SignInManager.IsSignedIn(User))
-                                {
                                     <div class="col-lg-12">
                                         <div class="form-submit cerchio">
                                             <input type="submit" class="axil-button button-rounded" value="Post Comment">
