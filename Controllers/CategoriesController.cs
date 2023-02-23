@@ -85,6 +85,12 @@ namespace AstraBlog.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Reformat if Image was Updated
+                if (category.ImageFile != null)
+                {
+                    category.ImageData = await _imageService.ConvertFileToByteArrayAsync(category.ImageFile);
+                    category.ImageType = category.ImageFile.ContentType;
+                }
                 _context.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
