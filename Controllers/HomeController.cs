@@ -1,6 +1,8 @@
 ﻿using AstraBlog.Data;
 using AstraBlog.Models;
 using AstraBlog.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -12,11 +14,13 @@ namespace AstraBlog.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IBlogPostService _blogPostService;
+        private readonly IEmailSender _emailService;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IBlogPostService blogPostService)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IBlogPostService blogPostService, IEmailSender emailService)
         {
             _logger = logger;
             _blogPostService = blogPostService;
+            _emailService = emailService;
         }
 
         public async Task<IActionResult> Index(int? pageNum)
@@ -33,12 +37,38 @@ namespace AstraBlog.Controllers
             return View(model);
         }
 
-        //public Task<IActionResult> ContactMe(EmailData emailData)
-        //{
-        //    ModelState.Remove(emailData);
+        public IActionResult Contact() 
+        {
+            return View();
+        }
 
-        //    return View();
-        //}
+        [HttpPost]
+        public async Task<IActionResult> ContactMe(EmailData emailData)
+        {
+            if (ModelState.IsValid)
+            {
+                string? swalMessage = string.Empty;
+
+                try
+                {
+                    emailData.Body = ($"""<strong>{emailData.EmailSenderName}</strong> sent a message:<br><br>{emailData.Body}<br><br><strong>Their email is:<a href="mailto:{emailData.SenderEmailAddress}">{emailData.SenderEmailAddress}</a></strong>""");
+
+                    await _emailService.SendEmailAsync("ryanpenley@gmail.com", "Message from Humble Hacker Contact Me", emailData.Body!);
+
+                    //swalMessage = "Success: Your Email has been sent!";
+
+                    return RedirectToAction(nameof(Index), new { swalMessage });
+                }
+                catch (Exception)
+                {
+                    //swalMessage = "Error! Your Email Failed to Send!";
+                    return RedirectToAction(nameof(Index), new { swalMessage });
+                    throw;
+                }
+            }
+
+            return View(emailData);
+        }
 
 
         public IActionResult SearchIndex(string? searchString, int? pageNum)

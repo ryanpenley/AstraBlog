@@ -19,38 +19,20 @@
                         <form asp-action="ContactMe" asp-controller="Home" method="post">
                             <div class="col-lg-4 col-md-4 col-12">
                                 <div class="form-group">
-                                    <label class="form-label">Your Name</label>
-                                    <input name="contact-name" id="contact-name" type="text">
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-12">
-                                <div class="form-group">
-                                    <label>First Name</label>
-                                    <input for="" name="contact-email" id="contact-email" type="email">
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-12">
-                                <div class="form-group">
-                                    <label>Last Name</label>
-                                    <input for="" name="contact-email" id="contact-email" type="email">
+                                    <label>Name</label>
+                                    <input asp-for="EmailSenderName" id="contact-email" type="text">
                                 </div>
                             </div>
                             <div class="col-lg-4 col-md-4 col-12">
                                 <div class="form-group">
                                     <label>Your Email</label>
-                                    <input for="contact-email" name="contact-email" id="contact-email" type="email">
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label asp-for="@Model.EmailSubject">Subject</label>
-                                    <textarea name="subject-message" asp-for="@Model.EmailSubject" id="subject-message"></textarea>
+                                    <input asp-for="SenderEmailAddress" id="contact-email" type="email">
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="contact-message">Your Message</label>
-                                    <textarea name="contact-message" asp-for="@Model.EmailBody" id="contact-message"></textarea>
+                                    <textarea asp-for="Body"></textarea>
                                 </div>
                             </div>
                             <div class="col-12">

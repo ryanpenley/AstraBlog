@@ -119,7 +119,9 @@
                                         </ul>
                                     </li>
                                     @* <li><a href="home-lifestyle-blog.html">About</a></li>*@
-                                    <li><a asp-action="ContactMe" asp-controller="Home">Contact</a></li>
+                                    <li>
+                                        <a asp-action="Contact" asp-controller="Home">Contact Me</a>
+                                    </li>
                                     @if (User.Identity!.IsAuthenticated && !User.IsInRole("Admin"))
                                     {
                                         <li><a asp-action="MyLikes" asp-controller="BlogPosts">My Likes</a></li>
