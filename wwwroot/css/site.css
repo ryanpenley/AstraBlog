@@ -63,3 +63,7 @@ body {
 .axil-header .logo a img {
     min-height: 100px !important;
 }
+
+#footerLogo {
+    height: 70px !important;
+}

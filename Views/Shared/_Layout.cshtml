@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="~/assets/css/style.css">
 
 
-    <link href="~/css/pagedlist.css" rel="stylesheet" />
+    <link href="~/css/pagedList.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
 </head>
@@ -358,17 +358,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-4 col-md-12">
-                            <div class="copyright-left">
-                                <div class="logo">
-                                    <a href="index.html">
-                                        <img class="dark-logo" src="~/img/HumbleHackerNoBgLinedLogo.png" style="height:40;" alt="Logo Images">
-                                        <img class="light-logo" src="~/img/HumbleHackerNoBgLinedLogo.png" style="height:40;" alt="Logo Images">
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-md-12">
-                            <div class="copyright-center text-start text-lg-center mt_md--20 mt_sm--20">
+                            <div class="copyright-left text-start text-lg-center mt_md--20 mt_sm--20">
                                 <div id="my_switcher" class="my_switcher align-items-center">
                                     <ul>
                                         <li>
@@ -382,6 +372,15 @@
                                             </a>
                                         </li>
                                     </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-12">
+                            <div class="text-center">
+                                <div class="logo">
+                                    <a asp-controller="Home" asp-action="Index">
+                                        <img id="footerLogo" src="~/img/HumbleHackerNoBgLinedLogo.png" alt="Logo Images">
+                                    </a>
                                 </div>
                             </div>
                         </div>
