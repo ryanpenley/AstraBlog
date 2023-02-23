@@ -53,6 +53,19 @@ namespace AstraBlog.Controllers
 
             return View(model); 
         }
+        public async Task<IActionResult> RecentPosts(int? pageNum)
+        {
+
+            // add pageSize and page = pageNum
+
+            int pagesize = 3;
+            int page = pageNum ?? 1;
+            ViewData["Page"] = page;
+
+            IPagedList<BlogPost> model = (await _blogPostService.GetRecentPostsAsync()).ToPagedList(page,pagesize);
+
+            return View(model); 
+        }
 
         public IActionResult Contact() 
         {
