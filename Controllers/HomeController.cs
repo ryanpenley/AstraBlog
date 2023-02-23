@@ -23,7 +23,7 @@ namespace AstraBlog.Controllers
             _emailService = emailService;
         }
 
-        public async Task<IActionResult> Index(int? pageNum)
+        public async Task<IActionResult> Index(int? pageNum, string? swalMessage = null)
         {
             int pageSize = 3;
             int page = pageNum?? 1;
@@ -33,6 +33,8 @@ namespace AstraBlog.Controllers
 
 
             IPagedList<BlogPost> model = (await _blogPostService.GetRecentPostsAsync()).ToPagedList(page,pageSize);
+
+            ViewData["SwalMessage"] = swalMessage;
 
             return View(model);
         }

@@ -30,7 +30,7 @@
 
                 @foreach (var blogPost in Model)
                 {
-                    <partial name="_BlogCard" model="@blogPost"/>
+                    <partial name="_BlogCard" model="@blogPost" />
                 }
 
                 <div>
@@ -41,8 +41,8 @@
                     @Html.PagedListPager(Model, pageNum => Url.Action("Index", new{ pageNum }),
                     new PagedListRenderOptions
                     {
-                        LiElementClasses = new string[] {"my-page-item"},
-                        PageClasses = new string[] {"my-page-link"}
+                    LiElementClasses = new string[] {"my-page-item"},
+                    PageClasses = new string[] {"my-page-link"}
                     }
                     )
 
@@ -61,3 +61,26 @@
         </div>
     </div>
 </div>
+
+
+@section scripts{
+    <!--Sweet Alerts-->
+    <script>
+        let message = '@(ViewBag.SwalMessage)';
+        if (!message.includes("Error") && message != '') {
+            Swal.fire({
+                backdrop: false,
+                icon: 'success',
+                title: message,
+                showConfirmButton: true
+            })
+        } else if (message.includes("Error")) {
+            Swal.fire({
+                backdrop: false,
+                icon: 'error',
+                title: 'Oops...',
+                text: message
+            })
+        }
+    </script>
+    }
