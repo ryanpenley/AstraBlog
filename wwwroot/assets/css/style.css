@@ -11475,6 +11475,7 @@ Post Category
 
         .post-meta .post-author-avatar img {
             width: 100%;
+            height: 100%;
         }
 
         .post-meta .post-author-avatar.border-rounded {
