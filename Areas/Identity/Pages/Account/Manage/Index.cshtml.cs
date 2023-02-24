@@ -127,7 +127,7 @@ namespace AstraBlog.Areas.Identity.Pages.Account.Manage
             user.FirstName = Input.FirstName;
             user.LastName = Input.LastName;
 
-            if (Input.ImageData != null)
+            if (Input.ImageFile != null)
             {
                 user.ImageData = await _imageService.ConvertFileToByteArrayAsync(Input.ImageFile);
                 user.ImageType = Input.ImageFile.ContentType;
