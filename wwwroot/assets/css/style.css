@@ -11469,6 +11469,7 @@ Post Category
 
     .post-meta .post-author-avatar {
         min-width: 50px;
+        min-height: 50px;
         margin-right: 15px;
     }
 
