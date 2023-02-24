@@ -85,13 +85,13 @@ namespace AstraBlog.Controllers
 
                     await _emailService.SendEmailAsync("ryanpenley@gmail.com", "Message from Humble Hacker Contact Me", emailData.Body!);
 
-                    //swalMessage = "Success: Your Email has been sent!";
+                    swalMessage = "Success: Your Email has been sent!";
 
                     return RedirectToAction(nameof(Index), new { swalMessage });
                 }
                 catch (Exception)
                 {
-                    //swalMessage = "Error! Your Email Failed to Send!";
+                    swalMessage = "Error! Your Email Failed to Send!";
                     return RedirectToAction(nameof(Index), new { swalMessage });
                     throw;
                 }
