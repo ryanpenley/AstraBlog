@@ -67,3 +67,23 @@ body {
 #footerLogo {
     height: 70px !important;
 }
+
+#loginButton {
+    background-color: #3168d8;
+    text-decoration-color: white;
+    border: 2px solid #3168d8;
+    border-radius: 12px;
+    color: white;
+    min-width: 85px;
+}
+
+    #loginButton:hover {
+        background-color: #af68ff;
+        transition-duration: 0.4s;
+        border: 2px solid #af68ff;
+        border-radius: 12px;
+        color: white;
+    }
+    
+
+
