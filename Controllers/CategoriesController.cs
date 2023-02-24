@@ -11,9 +11,12 @@ using Microsoft.AspNetCore.Identity;
 using AstraBlog.Services;
 using AstraBlog.Services.Interfaces;
 using X.PagedList;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace AstraBlog.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -37,7 +40,9 @@ namespace AstraBlog.Controllers
                           Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
         }
 
+
         // GET: Categories/Details/5*************************************************************************************************
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id, int? pageNum)
         {
             if (id == null || _context.Categories == null)

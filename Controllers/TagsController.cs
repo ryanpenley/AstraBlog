@@ -9,9 +9,11 @@ using AstraBlog.Data;
 using AstraBlog.Models;
 using Microsoft.AspNetCore.Identity;
 using AstraBlog.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AstraBlog.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class TagsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -34,6 +36,7 @@ namespace AstraBlog.Controllers
         }
 
         // GET: Tags/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id, int? pageNum)
         {
             if (id == null || _context.Tags == null)
