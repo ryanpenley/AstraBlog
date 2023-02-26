@@ -145,7 +145,8 @@
                             {
 
                                 <!-- Start Single Comment  -->
-
+                                @if (User.IsInRole("Admin"))
+                                {
                                 <li class="comment">
                                     <div class="comment-body">
                                         <div class="single-comment">
@@ -170,8 +171,41 @@
                                                 </div>
                                             </div>
                                         </div>
+                                            <div>
+                                                <a asp-action="Edit" asp-controller="Comments" class="btn btn-outline-primary" asp-route-id="@comment.Id">Edit</a>
+                                                <a asp-action="Delete" asp-controller="Comments" class="btn btn-outline-danger" asp-route-id="@comment.Id">Delete</a>
+                                            </div>
                                     </div>
-                                </li>
+                                    </li>
+                                } else
+                                {
+                                    <li class="comment">
+                                        <div class="comment-body">
+                                            <div class="single-comment">
+                                                <div class="comment-img">
+                                                    <img src="@_ImageService.ConvertByteArrayToFile(comment.Author!.ImageData!,comment.Author.ImageType!, (int)DefaultImage.BlogUserImage)" style="height:60px; width:60px" alt="Author Images">
+                                                </div>
+                                                <div class="comment-inner">
+                                                    <h6 class="commenter">
+                                                        <a class="hover-flip-item-wrapper" href="#">
+                                                            <span class="hover-flip-item">
+                                                                <span data-text="@comment.Author.FullName">@comment.Author.FullName</span>
+                                                            </span>
+                                                        </a>
+                                                    </h6>
+                                                    <div class="comment-meta">
+                                                        <div class="time-spent">@comment.Created.ToString("MMM dd, yyyy hh:mm tt")</div>
+                                                    </div>
+                                                    <div class="comment-text">
+                                                        <p class="b2">
+                                                            @comment.Body
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
                                 <!-- End Single Comment  -->
                             }
                         </ul>
