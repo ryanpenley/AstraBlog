@@ -42,7 +42,7 @@
                     new PagedListRenderOptions
                     {
                     LiElementClasses = new string[] {"my-page-item"},
-                    PageClasses = new string[] {"my-page-link"}
+                    PageClasses = new string[] {"my-page-link text-dark"}
                     }
                     )
 
@@ -82,5 +82,14 @@
                 text: message
             })
         }
+    </script>
+
+    <script>
+        let a = document.createElement('a');
+        let span = document.querySelector('#my-page-link');
+        a.textContent = span.textContent;
+        a.style.background = '#3858f6';
+        a.style.color = "#ffffff";
+        span.replaceWith(a);
     </script>
     }

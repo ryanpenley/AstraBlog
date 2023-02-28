@@ -22,9 +22,275 @@
     <link rel="stylesheet" href="~/assets/css/plugins/plugins.css">
     <link rel="stylesheet" href="~/assets/css/style.css">
 
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="~/css/pagedList.css" rel="stylesheet" />
+
 </head>
 
 <body>
+
+    <!-- Start Header -->
+    <header class="header axil-header  header-light header-sticky header-with-shadow">
+        <div class="header-wrap">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-3 col-12">
+                    <div class="logo">
+                        <a>
+                            <img class="pb-1" src="/img/HumbleHackerLogoNoBGLessGlow.png" />
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-xl-6 d-none d-xl-block">
+                    <div class="mainmenu-wrapper">
+                        <nav class="mainmenu-nav">
+                            <!-- Start Mainmanu Nav -->
+                            <ul class="mainmenu">
+                                <li class="menu-item-has-children">
+                                    <a asp-controller="Home" asp-action="Index">Home</a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a href="#">Posts</a>
+                                    <ul class="axil-submenu">
+                                        <li>
+                                            <a class="hover-flip-item-wrapper" href="#">
+                                                <span class="">
+                                                    <span>All Posts</span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a asp-controller="Home" asp-action="PopularPosts">Popular Posts</a>
+                                        </li>
+                                        <li>
+                                            <a asp-controller="Home" asp-action="RecentPosts">Recent Posts</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a asp-action="Contact" asp-controller="Home">Contact Me</a>
+                                </li>
+                                @if (User.Identity!.IsAuthenticated && !User.IsInRole("Admin"))
+                                {
+                                    <li><a asp-action="MyLikes" asp-controller="BlogPosts">My Likes</a></li>
+                                }
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li class="menu-item-has-children">
+                                        <a href="#">Author</a>
+                                        <ul class="axil-submenu">
+                                            <li>
+                                                <a class="hover-flip-item-wrapper" asp-controller="BlogPosts" asp-action="AdminPage">
+                                                    <span class="">
+                                                        <span>Admin</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="hover-flip-item-wrapper" asp-controller="BlogPosts" asp-action="Create">
+                                                    <span class="">
+                                                        <span>New Post</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="hover-flip-item-wrapper" asp-controller="BlogPosts" asp-action="Edit">
+                                                    <span class="hover-flip-item">
+                                                        <span data-text="Manage Posts">Manage Posts</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="hover-flip-item-wrapper" asp-controller="Categories" asp-action="Index">
+                                                    <span class="hover-flip-item">
+                                                        <span data-text="Manage Categories">Manage Categories</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="hover-flip-item-wrapper" asp-controller="Tags" asp-action="Index">
+                                                    <span class="hover-flip-item">
+                                                        <span data-text="Manage Tags">Manage Tags</span>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                            <!-- End Mainmanu Nav -->
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-lg-8 col-md-8 col-sm-9 col-12">
+                    <div class="header-search text-end d-flex align-items-center">
+                        <form asp-action="SearchIndex" asp-controller="Home" class="header-search-form d-sm-block d-none" method="post">
+                            <div class="axil-search form-group">
+                                <button type="submit" class="search-button"><i class="fal fa-search"></i></button>
+                                <input type="text" class="form-control" placeholder="Search" name="searchString">
+                            </div>
+                        </form>
+                        <div class="mobile-search-wrapper d-sm-none d-block">
+                            <button class="search-button-toggle"><i class="fal fa-search"></i></button>
+                            <form asp-action="SearchIndex" asp-controller="Home" class="header-search-form" method="post">
+                                <div class="axil-search form-group">
+                                    <button type="submit" class="search-button"><i class="fal fa-search"></i></button>
+                                    <input type="text" class="form-control" placeholder="Search" name="searchString">
+                                </div>
+                            </form>
+                        </div>
+                        <ul class="metabar-block">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item dropdown has-arrow main-drop">
+                                    <a href="#" class="dropdown-toggle nav-link" data-bs-toggle="dropdown" aria-expanded="false">
+                      @*                  <span class="user-img">
+                                            <img src="@_ImageService.ConvertByteArrayToFile(blogUser!.ImageData!,blogUser!.ImageType!,(int)DefaultImage.BlogUserImage)" alt="">
+                                            <span class="status online"></span>
+                                        </span>
+                                        <span>@blogUser.FullName</span>*@
+                                    </a>
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <div class="dropdown-menu animate__slideInDown">
+                                            <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">My Profile</a>
+                                            <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit();">Logout</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="dropdown-menu animate__slideInDown">
+                                            <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">Sign In</a>
+                                            <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                                        </div>
+                                    }
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item dropdown has-arrow main-drop">
+                                    <a href="#" class="dropdown-toggle nav-link p-2" id="loginButton" data-bs-toggle="dropdown" aria-expanded="false">Login</a>
+                                    <div class="dropdown-menu animate__slideInDown">
+                                        <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Login">Sign In</a>
+                                        <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                        <!-- Start Hamburger Menu  -->
+                        <div class="hamburger-menu d-block d-xl-none">
+                            <div class="hamburger-inner">
+                                <div class="icon"><i class="fal fa-bars"></i></div>
+                            </div>
+                        </div>
+                        <!-- End Hamburger Menu  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Start Header -->
+    <!-- Start Mobile Menu Area  -->
+    <div class="popup-mobilemenu-area">
+        <div class="inner">
+            <div class="mobile-menu-top">
+                <div class="logo">
+                    <a>
+                        <img class="pb-1" src="/img/HumbleHackerNoBgLinedLogo.png" />
+                    </a>
+                </div>
+                <div class="mobile-close">
+                    <div class="icon">
+                        <i class="fal fa-times"></i>
+                    </div>
+                </div>
+            </div>
+            <ul class="mainmenu">
+                <li class="menu-item">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="#">Posts</a>
+                    <ul class="axil-submenu">
+                        <li>
+                            <a class="hover-flip-item-wrapper" href="#">
+                                <span class="">
+                                    <span>All Posts</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover-flip-item-wrapper" href="#">
+                                <span class="">
+                                    <span> Popular Posts</span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover-flip-item-wrapper" href="#">
+                                <span class="">
+                                    <span data-text="Recent Posts">Recent Posts</span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a asp-action="Contact" asp-controller="Home">Contact Me</a>
+                </li>
+                @if (User.Identity!.IsAuthenticated && !User.IsInRole("Admin"))
+                {
+                    <li><a asp-action="MyLikes" asp-controller="BlogPosts">My Likes</a></li>
+                }
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="menu-item-has-children">
+                        <a href="#">Author</a>
+                        <ul class="axil-submenu">
+                            <li>
+                                <a class="hover-flip-item-wrapper" asp-controller="BlogPosts" asp-action="AdminPage">
+                                    <span class="">
+                                        <span>Admin</span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="hover-flip-item-wrapper" asp-controller="BlogPosts" asp-action="Create">
+                                    <span class="">
+                                        <span>New Post</span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="hover-flip-item-wrapper" asp-controller="BlogPosts" asp-action="Edit">
+                                    <span class="hover-flip-item">
+                                        <span data-text="Manage Posts">Manage Posts</span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="hover-flip-item-wrapper" asp-controller="Categories" asp-action="Index">
+                                    <span class="hover-flip-item">
+                                        <span data-text="Manage Categories">Manage Categories</span>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="hover-flip-item-wrapper" asp-controller="Tags" asp-action="Index">
+                                    <span class="hover-flip-item">
+                                        <span data-text="Manage Tags">Manage Tags</span>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <!-- End Mobile Menu Area  -->
+
     <div class="main-wrapper">
         <div id="my_switcher" class="my_switcher">
             <ul>
