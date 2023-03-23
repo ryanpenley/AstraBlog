@@ -8039,7 +8039,7 @@ button.axil-button {
 
         a.axil-button.color-secondary-alt:hover,
         button.axil-button.color-secondary-alt:hover {
-            color: var(--color-secondary-alt);
+            color: var(--color-white);
             background: transparent;
         }
 
@@ -12396,6 +12396,7 @@ blockquote p {
 @media only screen and (max-width: 575px) {
     .axil-total-comment-post .add-comment-button {
         margin-top: 20px;
+        color: white;
     }
 }
 
